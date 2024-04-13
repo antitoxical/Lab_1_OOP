@@ -6,16 +6,16 @@ using System.Windows.Forms;
 namespace GraphicShapes
 {
     
-    public abstract class Shape
+    public abstract class MyShape
     {
         public abstract void Draw(Graphics g);
     }
 
    
-    public class Line : Shape
+    public class Line : MyShape
     {
-        public Point Start { get; set; }
-        public Point End { get; set; }
+        public Point Start;
+        public Point End;
 
         public Line(Point start, Point end)
         {
@@ -30,10 +30,10 @@ namespace GraphicShapes
     }
 
   
-    public class Rectangle : Shape
+    public class Rectangle : MyShape
     {
-        public Point Location { get; set; }
-        public Size Size { get; set; }
+        public Point Location;
+        public Size Size;
 
         public Rectangle(Point location, Size size)
         {
@@ -48,12 +48,12 @@ namespace GraphicShapes
     }
 
  
-    public class Ellipse : Shape
+    public class Circle : MyShape
     {
-        public Point Location { get; set; }
-        public Size Size { get; set; }
+        public Point Location;
+        public Size Size;   
 
-        public Ellipse(Point location, Size size)
+        public Circle(Point location, Size size)
         {
             Location = location;
             Size = size;
@@ -66,11 +66,11 @@ namespace GraphicShapes
     }
 
 
-    public class Triangle : Shape
+    public class Triangle : MyShape
     {
-        public Point Point1 { get; set; }
-        public Point Point2 { get; set; }
-        public Point Point3 { get; set; }
+        public Point Point1;
+        public Point Point2;
+        public Point Point3;
 
         public Triangle(Point point1, Point point2, Point point3)
         {
@@ -88,10 +88,10 @@ namespace GraphicShapes
 
 
   
-    public class Square : Shape
+    public class Square : MyShape
     {
-        public Point Location { get; set; }
-        public int Size { get; set; }
+        public Point Location;
+        public int Size;
 
         public Square(Point location, int size)
         {
@@ -105,12 +105,41 @@ namespace GraphicShapes
         }
     }
 
-    
-    public class ShapeList
-    {
-        private List<Shape> shapes = new List<Shape>();
 
-        public void AddShape(Shape shape)
+    public class Trapezoid : MyShape
+    {
+        public Point Location;
+        public int Base1;
+        public int Base2;
+        public int Height;
+
+        public Trapezoid(Point location, int base1, int base2, int height)
+        {
+            Location = location;
+            Base1 = base1;
+            Base2 = base2;
+            Height = height;
+        }
+
+        public override void Draw(Graphics g)
+        {
+            Point[] points = new Point[4];
+            points[0] = Location;
+            points[1] = new Point(Location.X + Base1, Location.Y);
+            points[2] = new Point(Location.X + Base2, Location.Y + Height);
+            points[3] = new Point(Location.X, Location.Y + Height);
+
+            g.DrawPolygon(Pens.Black, points);
+        }
+    }
+
+
+
+    public class ListOfShapes
+    {
+        private List<MyShape> shapes = new List<MyShape>();
+
+        public void AddShape(MyShape shape)
         {
             shapes.Add(shape);
         }
@@ -129,17 +158,19 @@ namespace GraphicShapes
     {
         static void Main(string[] args)
         {
-            ShapeList shapeList = new ShapeList();
-            shapeList.AddShape(new Line(new Point(0, 0), new Point(100, 100)));
+            ListOfShapes shapeList = new ListOfShapes();
+            shapeList.AddShape(new Line(new Point(20, 20), new Point(100, 20)));
             shapeList.AddShape(new Rectangle(new Point(150, 150), new Size(200, 100)));
-            shapeList.AddShape(new Ellipse(new Point(200, 10), new Size(100, 100)));
+            shapeList.AddShape(new Circle(new Point(200, 10), new Size(100, 100)));
             shapeList.AddShape(new Triangle(new Point(150, 100), new Point(180, 100), new Point(150, 10)));
             shapeList.AddShape(new Square(new Point(10, 150), 100));
+            shapeList.AddShape(new Trapezoid(new Point(20, 40), 100, 80, 60));
 
-            
+
             Form form = new Form();
             form.Width = 380; 
             form.Height = 300;
+            form.FormBorderStyle = FormBorderStyle.FixedSingle;
             form.Paint += (sender, e) =>
             {
                 shapeList.DrawAll(e.Graphics);
